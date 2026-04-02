@@ -3,7 +3,7 @@ export const SITE = {
   author: "KaRyuRiD",
   profile: "https://karyurid.github.io/",
   desc: "놀이터",
-  title: "kaRyuRiD's 놀이터",
+  title: "KaRyuRiD's 놀이터",
   ogImage: "astropaper-og.jpg",
   lightAndDarkMode: true,
   postPerIndex: 4,
