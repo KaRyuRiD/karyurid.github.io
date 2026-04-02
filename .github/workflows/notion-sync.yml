@@ -1,0 +1,26 @@
+name: Notion to Astro Sync
+on:
+  schedule:
+    - cron: "0 * * * *" # 매 시간마다 실행
+  workflow_dispatch: # 수동 실행 가능
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: pnpm install notion-to-md @notionhq/client
+      - name: Run sync script
+        run: node scripts/notion-sync.js # 직접 짠 변환 스크립트 실행
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+      - name: Commit and Push
+        run: |
+          git config --global user.name "NotionSyncBot"
+          git add .
+          git commit -m "chore: update posts from notion" || exit 0
+          git push
