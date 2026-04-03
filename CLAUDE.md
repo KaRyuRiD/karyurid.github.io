@@ -66,6 +66,7 @@ Required fields: `title`, `pubDatetime`, `description`. Key optional fields:
 - `ogImage` — custom OG image (local asset or URL); omit to use dynamic generation
 - `hideEditPost: true` — hides the edit link on that post
 - `timezone` — overrides `SITE.timezone` for date display
+- `canonicalURL` — override the canonical URL for the post
 
 In dev mode (`pnpm dev`), drafts and future-dated posts are visible. In production, `postFilter.ts` hides them (with a 15-minute `scheduledPostMargin` grace window).
 
@@ -81,6 +82,8 @@ node scripts/notion-sync.js
 
 The Notion DB must have `제목` (title), `작성일` (date), `태그` (multi-select), and `상태` (status) properties.
 
+The GitHub Actions workflow (`.github/workflows/notion-sync.yml`) runs this script **hourly** and auto-commits any new/changed files back to `main` with the message `chore: update posts from notion`. Requires `NOTION_TOKEN` and `NOTION_DATABASE_ID` repository secrets.
+
 ### Shiki Code Block Features
 
 Code blocks support transformer annotations:
@@ -93,6 +96,8 @@ Code blocks support transformer annotations:
 
 `PUBLIC_GOOGLE_SITE_VERIFICATION` — optional, client-side, for Google Search Console verification.
 
-## CI
+## CI / CD
 
-`.github/workflows/ci.yml` runs on PRs: lint → format check → build (3-minute timeout, Node 20, pnpm 10.33.0).
+**CI** (`.github/workflows/ci.yml`): runs on every PR and push to `main` — lint → format check → build (3-minute timeout, Node 24, pnpm 10.33.0).
+
+**Deploy** (`.github/workflows/deploy.yml`): manual `workflow_dispatch` only — runs CI, then deploys `dist/` to GitHub Pages. Not triggered automatically on push.
