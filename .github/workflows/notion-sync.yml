@@ -9,12 +9,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: "📦 Install pnpm"
+        uses: pnpm/action-setup@v4
         with:
-          node-version: 20
-      - run: pnpm install notion-to-md @notionhq/client
+          version: 10.33.0
+
+      - name: "⚙️ Setup Node.js"
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: "pnpm"
+
+      - name: "📦 Install dependencies"
+        run: pnpm install
       - name: Run sync script
-        run: node scripts/notion-sync.js # 직접 짠 변환 스크립트 실행
+        run: node scripts/notion-sync.js
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}

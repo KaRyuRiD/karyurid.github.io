@@ -55,6 +55,44 @@ Dynamic OG images are generated at build time using **Satori** (JSX → SVG) and
 
 `console.log` is forbidden. The `dist/`, `.astro/`, and `public/pagefind/` directories are ignored by linting.
 
+### Post Frontmatter Schema
+
+Required fields: `title`, `pubDatetime`, `description`. Key optional fields:
+
+- `draft: true` — hides from production (second way to draft, alongside `_` filename prefix)
+- `featured: true` — surfaces on homepage
+- `modDatetime` — last-modified date shown in UI
+- `tags` — defaults to `["others"]`
+- `ogImage` — custom OG image (local asset or URL); omit to use dynamic generation
+- `hideEditPost: true` — hides the edit link on that post
+- `timezone` — overrides `SITE.timezone` for date display
+
+In dev mode (`pnpm dev`), drafts and future-dated posts are visible. In production, `postFilter.ts` hides them (with a 15-minute `scheduledPostMargin` grace window).
+
+### Notion Sync
+
+`scripts/notion-sync.js` pulls pages with status `Published` from a Notion database and writes them as Markdown to `src/data/blog/`. Requires env vars:
+
+```bash
+NOTION_TOKEN=...
+NOTION_DATABASE_ID=...
+node scripts/notion-sync.js
+```
+
+The Notion DB must have `제목` (title), `작성일` (date), `태그` (multi-select), and `상태` (status) properties.
+
+### Shiki Code Block Features
+
+Code blocks support transformer annotations:
+- `// [!code highlight]` — highlight a line
+- `// [!code ++]` / `// [!code --]` — diff notation
+- `// [!code word:foo]` — word highlight
+- Filename shown via `transformerFileName` (set filename with a comment or meta string on the opening fence)
+
+### Environment Variables
+
+`PUBLIC_GOOGLE_SITE_VERIFICATION` — optional, client-side, for Google Search Console verification.
+
 ## CI
 
 `.github/workflows/ci.yml` runs on PRs: lint → format check → build (3-minute timeout, Node 20, pnpm 10.33.0).
